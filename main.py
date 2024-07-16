@@ -1,13 +1,20 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from utils import get_double, get_deviations
 
-# Parámetros de la simulación
-set_point = 22  # Temperatura deseada (grados Celsius)
-initial_temperature = 26  # Temperatura inicial de la habitación (grados Celsius)
+# Parametros fijos de la simulación
 time_step = 1  # Paso de tiempo en minutos
 total_time = 300  # Tiempo total de la simulación en minutos
-deviations = [(100, 24), (240, 23)] # Desviaciones con un formato de (tiemp-ocurrencia, temperatura)
+
+# Parámetros variables de la simulación
+
+# Temperatura deseada (grados Celsius) (setpoint de 22 grados se uso en simulación)
+set_point = get_double("Ingrese la temperatura deseada (set point) en grados Celsius: ", 18, 23)
+# Temperatura inicial de la habitación (grados Celsius) (t0 de 26 grados se uso en simulación)
+initial_temperature = get_double("Ingrese la temperatura inicial de la habitación en grados Celsius: ", 16, 30)
+
+deviations = get_deviations()
 
 # Coeficientes del controlador PID ajustados
 Kp = 0.2
@@ -40,10 +47,6 @@ for t in range(1, total_time + 1):
 
     # Salida del controlador PID
     control_signal = Kp * error + Ki * integral + Kd * derivative
-
-    # El aire acondicionado solo puede enfriar
-    #if control_signal > 0:
-    #    control_signal = 0
 
     # Limitar la cantidad máxima de enfriamiento
     control_signal = max(control_signal, max_cooling_rate)
