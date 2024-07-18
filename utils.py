@@ -18,7 +18,7 @@ def get_deviations():
         if time.lower() == 'done':
             break
         elif time.lower() == 'default':
-            deviations = [(100, 24), (240, 23)]
+            deviations = [(100, 0.5), (240, 0.3)]
             break
         try:
             time = float(time)
@@ -26,7 +26,7 @@ def get_deviations():
             print("Por favor, ingrese un número válido.")
             continue
         
-        temperature = input(f"Ingrese la temperatura de la desviacion {len(deviations)+1}: ")
+        temperature = input(f"Ingrese la variacion de temperatura {len(deviations)+1}: ")
         try:
             temperature = float(temperature)
         except ValueError:
@@ -35,4 +35,5 @@ def get_deviations():
 
         deviations.append((time, temperature))
     return deviations
+
 
