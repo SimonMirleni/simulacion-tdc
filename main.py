@@ -10,9 +10,9 @@ total_time = 300  # Tiempo total de la simulación en minutos
 # Parámetros variables de la simulación
 
 # Temperatura deseada (grados Celsius) (setpoint de 22 grados se uso en simulación)
-set_point = get_double("Ingrese la temperatura deseada (set point) en grados Celsius: ", 18, 23)
+set_point = get_double("Ingrese la temperatura deseada (set point) en grados Celsius: ",18, 23)
 # Temperatura inicial de la habitación (grados Celsius) (t0 de 26 grados se uso en simulación)
-initial_temperature = get_double("Ingrese la temperatura inicial de la habitación en grados Celsius: ", 16, 30)
+initial_temperature = get_double("Ingrese la temperatura inicial de la habitación en grados Celsius: ", 10, 40)
 
 deviations = get_deviations()
 
@@ -39,29 +39,29 @@ for t in range(1, total_time + 1):
     # Aplicar desviación si corresponde
     if deviations and t >= deviations[0][0]:
         deviation = deviations.pop(0)
-        temperature = deviation[1]
-
+        temperature = temperature + deviation[1]
+    
     error = set_point - temperature
     integral += error * time_step
     derivative = (error - previous_error) / time_step
-
+    
     # Salida del controlador PID
     control_signal = Kp * error + Ki * integral + Kd * derivative
-
+    
     # Limitar la cantidad máxima de enfriamiento
     control_signal = max(control_signal, max_cooling_rate)
-
+    
     # Anti-reset windup: Evitar acumulación del término integral
     if control_signal == max_cooling_rate:
         integral -= error * time_step
-
+    
     # Actualización de la temperatura (modelo simple)
     temperature += control_signal * time_step
     temperatures.append(temperature)
     times.append(t)
-
+    
     previous_error = error
-
+    
     # Actualización de la velocidad del compresor y la apertura de la válvula
     compressor_speed.append(abs(control_signal) / abs(max_cooling_rate))  # Normalizado entre 0 y 1
     valve_opening.append(1 - (abs(control_signal) / abs(max_cooling_rate)))  # Inverso del control signal
